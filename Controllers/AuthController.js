@@ -61,6 +61,13 @@ AuthRouter.post("/register", async (req, res) => {
     });
 });
 
+AuthRouter.get("/login", async(req, res)=>{
+  return res.status(200).json({
+    status: 200,
+    message: "Login page",
+  });
+})
+
 // Assuming you have properly defined the AuthRouter using Express Router
 AuthRouter.post("/login", async (req, res) => {
   try {
@@ -119,6 +126,78 @@ AuthRouter.post("/login", async (req, res) => {
     });
   }
 });
+
+AuthRouter.put("/updateUser", isAuth, async (req, res) => {
+  try {
+    const userId = req.session.user.userId;
+    const {
+      phoneNo,
+      about,
+      skills,
+      certifications,
+      experience,
+      education,
+    } = req.body;
+
+    const updatedUserData = {
+      phoneNo,
+      about,
+      skills,
+      certifications,
+      experience,
+      education,
+    };
+
+    const updatedUser = await User.updateUser(userId, updatedUserData); // Use User.updateUser()
+
+    return res.status(200).json({
+      status: 200,
+      message: "User Updated Successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Database error",
+      error: error.message,
+    });
+  }
+});
+
+
+AuthRouter.get("/getUserDetails", isAuth, async (req, res) => {
+  try {
+    const userId = req.session.user.userId;
+
+    // Fetch user details from the database using the findUserById method
+    const user = await User.findUserById(userId);
+
+    return res.status(200).json({
+      status: 200,
+      message: "User details fetched successfully",
+      data: {
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        phoneNo: user.phoneNo,
+        about: user.about,
+        skills: user.skills,
+        certifications: user.certifications,
+        experience: user.experience,
+        education: user.education,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return res.status(500).json({
+      status: 500,
+      message: "Error fetching user details",
+      error: error.message,
+    });
+  }
+});
+
 
 AuthRouter.post("/logout", isAuth, async (req, res) => {
   try {

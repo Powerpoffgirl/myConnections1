@@ -79,6 +79,51 @@ let User = class {
     });
   }
 
+  static async updateUser(userId, updatedUserData) {
+    try {
+      if (updatedUserData.password) {
+        updatedUserData.password = await bcryptjs.hash(
+          updatedUserData.password,
+          parseInt(process.env.SALT)
+        );
+      }
+
+      const userDb = await UserSchema.findByIdAndUpdate(userId, updatedUserData, {
+        new: true,
+        runValidators: true,
+      });
+
+      console.log("UserDb:", userDb);
+      return userDb;
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  }
+
+  static async findUserById(userId) {
+    try {
+      const userId1 = new ObjectId(userId);
+
+      // Verify if the userId is in a valid format
+      if (!ObjectId.isValid(userId1)) {
+        throw new Error("Invalid userId format");
+      }
+
+      const userDb = await UserSchema.findById(userId1);
+
+      if (!userDb) {
+        throw new Error(`No user corresponding to this ${userId}`);
+      }
+
+      return userDb;
+    } catch (error) {
+      console.error("Error finding user by ID:", error);
+      throw error;
+    }
+  }
+
+
   static verifyUsernameAndEmailExits({ email, username }) {
     return new Promise(async (resolve, reject) => {
       try {

@@ -41,6 +41,8 @@ server.use(AuthRouter);
 server.use("/auth", AuthRouter);
 server.use("/follow", isAuth, FollowRouter);
 
+// server.get("/login")
+
 // Test get request
 server.get("/", (req, res) => {
     return res.send({
