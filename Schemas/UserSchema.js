@@ -38,8 +38,10 @@ const userSchema = new Schema({
   },
   education:{
     type: Array,
+  },
+  image:{
+    type:Buffer,
   }
-
 });
 
 module.exports = mongoose.model("users", userSchema);

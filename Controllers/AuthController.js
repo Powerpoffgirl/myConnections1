@@ -4,25 +4,29 @@ const { cleanUpAndValidate } = require("../utils/AuthUtils");
 const User = require("../Models/UserModel");
 const { isAuth } = require("../Middlewares/AuthMiddleware");
 const bcryptjs = require("bcryptjs");
+const cloudinary = require("cloudinary").v2    
 
-//  /auth/register
+ // /auth/register
 AuthRouter.post("/register", async (req, res) => {
-  console.log("Request Body AuthController",req.body);
+  console.log("Request Body AuthController", req.body);
+  console.log("REQUEST FILES", req.files);
   const { name, username, email, password, phoneNo, about, skills, certifications, experience, education } = req.body;
-  
-  await cleanUpAndValidate({ name, email, password, username })
-    .then(async () => {
-      try {
-        await User.verifyUsernameAndEmailExits({ email, username });
-      } catch (error) {
-        return res.send({
-          status: 400,
-          message: "Error Occurred",
-          error: error,
-        });
-      }
+  const file = req.files && req.files.image;
 
-      //create an obj for user class
+  try {
+    if (!file) {
+      return res.status(400).send("No file uploaded.");
+    }
+    
+    console.log("TEMP FILE PATH", file.tempFilePath);
+
+    cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      if (err) {
+        console.error("Error uploading to Cloudinary:", err);
+        return res.status(500).send("Error uploading image.");
+      }
+      console.log("Cloudinary upload result:", result);
+
       const userObj = new User({
         name,
         email,
@@ -30,35 +34,36 @@ AuthRouter.post("/register", async (req, res) => {
         username,
         phoneNo,
         about,
-        skills,
-        certifications,
-        experience,
-        education
+        skills: skills || [], // Use skills or an empty array
+        certifications: certifications || [], // Use certifications or an empty array
+        experience: experience || [], // Use experience or an empty array
+        education: education || [], // Use education or an empty array
+        image: result.secure_url
       });
 
       try {
         const userDb = await userObj.registerUser();
         console.log(userDb);
-        return res.send({
+        return res.status(200).send({
           status: 200,
           message: "User Created Successfully",
           data: userDb,
         });
       } catch (error) {
-        return res.send({
+        return res.status(500).send({
           status: 500,
           message: "Database error",
           error: error,
         });
       }
-    })
-    .catch((err) => {
-      return res.send({
-        status: 400,
-        message: "Data Invalid",
-        error: err,
-      });
     });
+  } catch (error) {
+    return res.status(400).send({
+      status: 400,
+      message: "Data Invalid - auth controller",
+      error: error,
+    });
+  }
 });
 
 AuthRouter.get("/login", async(req, res)=>{
@@ -127,6 +132,7 @@ AuthRouter.post("/login", async (req, res) => {
   }
 });
 
+// /auth/updateUser
 AuthRouter.put("/updateUser", isAuth, async (req, res) => {
   try {
     const userId = req.session.user.userId;
@@ -137,24 +143,61 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
       certifications,
       experience,
       education,
+      // Include image in the request body if needed
     } = req.body;
+
+    const file = req.files && req.files.image;
 
     const updatedUserData = {
       phoneNo,
       about,
-      skills,
-      certifications,
-      experience,
-      education,
+      skills: skills || [],
+      certifications: certifications || [],
+      experience: experience || [],
+      education: education || [],
     };
 
-    const updatedUser = await User.updateUser(userId, updatedUserData); // Use User.updateUser()
+    if (file) {
+      cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+        if (err) {
+          console.error("Error uploading to Cloudinary:", err);
+          return res.status(500).send("Error uploading image.");
+        }
+        console.log("Cloudinary upload result:", result);
+        updatedUserData.image = result.secure_url;
 
-    return res.status(200).json({
-      status: 200,
-      message: "User Updated Successfully",
-      data: updatedUser,
-    });
+        try {
+          const updatedUser = await User.updateUser(userId, updatedUserData);
+          return res.status(200).json({
+            status: 200,
+            message: "User Updated Successfully",
+            data: updatedUser,
+          });
+        } catch (error) {
+          return res.status(500).json({
+            status: 500,
+            message: "Database error",
+            error: error.message,
+          });
+        }
+      });
+    } else {
+      // No image provided, update user without an image
+      try {
+        const updatedUser = await User.updateUser(userId, updatedUserData);
+        return res.status(200).json({
+          status: 200,
+          message: "User Updated Successfully",
+          data: updatedUser,
+        });
+      } catch (error) {
+        return res.status(500).json({
+          status: 500,
+          message: "Database error",
+          error: error.message,
+        });
+      }
+    }
   } catch (error) {
     console.error("Error updating user:", error);
     return res.status(500).json({
@@ -164,6 +207,7 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
     });
   }
 });
+
 
 
 AuthRouter.get("/getUserDetails", isAuth, async (req, res) => {

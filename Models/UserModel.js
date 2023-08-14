@@ -1,6 +1,7 @@
 const UserSchema = require("../Schemas/UserSchema");
 const bcryptjs = require("bcryptjs");
 const ObjectId = require("mongodb").ObjectId;
+const cloudinary = require("cloudinary").v2   
 
 let User = class {
   username;
@@ -13,8 +14,9 @@ let User = class {
   certifications = [];
   experience = [];
   education = [];
+  image;
   
-  constructor({ username, email, password, name, phoneNo, about, skills = [], certifications = [], experience = [], education = []  }) {
+  constructor({ username, email, password, name, phoneNo, about, skills = [], certifications = [], experience = [], education = [] , image }) {
     this.username = username;
     this.name = name;
     this.email = email;
@@ -25,6 +27,7 @@ let User = class {
     this.certifications = certifications;
     this.experience = experience;
     this.education = education;
+    this.image= image;
   }
 
   static verifyUserId({ userId }) {
@@ -55,23 +58,25 @@ let User = class {
         this.password,
         parseInt(process.env.SALT)
       );
-
+  
       const user = new UserSchema({
         username: this.username,
         name: this.name,
         email: this.email,
         password: hashedPassword,
-        phoneNo:this.phoneNo,
-        about:this.about,
-        skills: [...this.skills],
-        certifications: [...this.certifications],
-        experience: [...this.experience],
-        education: [...this.education],
+        phoneNo: this.phoneNo,
+        about: this.about,
+        skills: this.skills, // Use direct assignment
+        certifications: this.certifications, // Use direct assignment
+        experience: this.experience, // Use direct assignment
+        education: this.education, // Use direct assignment
+        image: this.image
       });
-
+  
+      console.log("USER FROM USER MODEL", user);
       try {
         const userDb = await user.save();
-        console.log("UserDb line 70", userDb)
+        console.log("UserDb line 70", userDb);
         resolve(userDb);
       } catch (error) {
         reject(error);
@@ -87,12 +92,27 @@ let User = class {
           parseInt(process.env.SALT)
         );
       }
-
+  
+      if (updatedUserData.image) {
+        const file = updatedUserData.image;
+        const cloudinaryResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(file.tempFilePath, (err, result) => {
+            if (err) {
+              console.error("Error uploading to Cloudinary:", err);
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+        updatedUserData.image = cloudinaryResult.secure_url;
+      }
+  
       const userDb = await UserSchema.findByIdAndUpdate(userId, updatedUserData, {
         new: true,
         runValidators: true,
       });
-
+  
       console.log("UserDb:", userDb);
       return userDb;
     } catch (error) {
@@ -100,6 +120,7 @@ let User = class {
       throw error;
     }
   }
+  
 
   static async findUserById(userId) {
     try {
