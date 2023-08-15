@@ -277,6 +277,32 @@ AuthRouter.post("/logout", isAuth, async (req, res) => {
   }
 });
 
+// app.post("/logout_from_all_devices", isAuth, async (req, res) => {
+//   const username = req.session.user.username;
+
+//   //create a session schema
+//   const Schema = mongoose.Schema;
+//   const sessionSchema = new Schema({ _id: String }, { strict: false });
+//   const sessionModel = mongoose.model("session", sessionSchema);
+
+//   try {
+//     const deletionCount = await sessionModel.deleteMany({
+//       "session.user.username": username,
+//     });
+//     console.log(deletionCount);
+//     return res.send({
+//       status: 200,
+//       message: "Logout from all devices successfully",
+//     });
+//   } catch (error) {
+//     return res.send({
+//       status: 500,
+//       message: "Logout Failed",
+//       error: error,
+//     });
+//   }
+// });
+
 
 
 module.exports = AuthRouter;
