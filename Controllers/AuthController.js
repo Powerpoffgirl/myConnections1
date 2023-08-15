@@ -236,7 +236,7 @@ AuthRouter.get("/getUserDetails", async (req, res) => {
     }
 
     // Extract the token from the header
-    const token = authorizationHeader.split(' ')[1];
+    // const token = authorizationHeader.split(' ')[1];
 
     // Verify the token and extract user information
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -258,6 +258,7 @@ AuthRouter.get("/getUserDetails", async (req, res) => {
         certifications: user.certifications,
         experience: user.experience,
         education: user.education,
+        image:user.image,
       },
     });
   } catch (error) {
