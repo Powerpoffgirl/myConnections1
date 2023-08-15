@@ -5,6 +5,7 @@ const User = require("../Models/UserModel");
 const { isAuth } = require("../Middlewares/AuthMiddleware");
 const bcryptjs = require("bcryptjs");
 const cloudinary = require("cloudinary").v2    
+const jwt = require('jsonwebtoken');
 
  // /auth/register
 AuthRouter.post("/register", async (req, res) => {
