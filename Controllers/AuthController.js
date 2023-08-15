@@ -223,9 +223,25 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
 
 
 
-AuthRouter.get("/getUserDetails", isAuth, async (req, res) => {
+
+AuthRouter.get("/getUserDetails", async (req, res) => {
   try {
-    const userId = req.session.user.userId;
+    // Check if the authorization header exists and get the token
+    const authorizationHeader = req.header('Authorization');
+
+    if (!authorizationHeader) {
+      return res.status(401).json({
+        status: 401,
+        message: "Unauthorized: Token not provided",
+      });
+    }
+
+    // Extract the token from the header
+    const token = authorizationHeader.split(' ')[1];
+
+    // Verify the token and extract user information
+    const decodedToken = jwt.verify(token, 'your-secret-key');
+    const userId = decodedToken.userId; // Assuming you include userId in the token payload
 
     // Fetch user details from the database using the findUserById method
     const user = await User.findUserById(userId);
@@ -261,18 +277,6 @@ AuthRouter.post("/logout", isAuth, async (req, res) => {
     console.log("REQUEST BODY FROM LOGOUT", req.body);
     console.log("REQUEST SESSION  LOGOUT", req.session);
     const user = req.session.user;
-
-    // req.session.destroy((err) => {
-    //   if (err) {
-    //     // Handle session destroy error
-    //     console.error("Error occurred during logout:", err);
-    //     return res.status(500).json({
-    //       status: 500,
-    //       message: "Logout Unsuccessful",
-    //       error: "Something went wrong during logout.",
-    //     });
-    //   }
-      // Successful logout
       return res.status(200).json({
         status: 200,
         message: "Logout Successfully",
