@@ -223,7 +223,7 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
 
 
 
-AuthRouter.get("/getUserDetails",isAuth, async (req, res) => {
+AuthRouter.get("/getUserDetails", async (req, res) => {
   try {
     // Check if the authorization header exists and get the token
     const authorizationHeader = req.header('Authorization');
@@ -236,7 +236,7 @@ AuthRouter.get("/getUserDetails",isAuth, async (req, res) => {
     }
 
     // Extract the token from the header
-    // const token = authorizationHeader.split(' ')[1];
+    const token = authorizationHeader.split(' ')[1];
 
     // Verify the token and extract user information
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -258,7 +258,7 @@ AuthRouter.get("/getUserDetails",isAuth, async (req, res) => {
         certifications: user.certifications,
         experience: user.experience,
         education: user.education,
-        image:user.image
+        image:user.image,
       },
     });
   } catch (error) {
