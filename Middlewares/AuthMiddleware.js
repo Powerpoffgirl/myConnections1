@@ -3,7 +3,7 @@ const isAuth = (req, res, next) => {
   console.log("REQUEST SESSION USER", req.session.user);
 
  
-    if (req.session.isAuth && !undefined) {
+    if (req.session.isAuth != undefined) {
       // User is authenticated, proceed to the next middleware or route handler
       next();
     } else {
