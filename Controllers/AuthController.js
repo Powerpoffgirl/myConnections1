@@ -75,6 +75,7 @@ AuthRouter.get("/login", async(req, res)=>{
 
 // Assuming you have properly defined the AuthRouter using Express Router
 AuthRouter.post("/login", async (req, res) => {
+  
   try {
     console.log("REQUEST BODY",req.body)
     const { email, password } = req.body;
@@ -115,12 +116,14 @@ AuthRouter.post("/login", async (req, res) => {
       userId: userDb._id,
     };
 
+
     console.log("REQUEST SESSION AFTER LOGIN", req.session)
 
     return res.status(200).json({
       status: 200,
       message: "Login Successfully",
       data: userDb,
+      sessionId: req.sessionID,
     });
   } catch (error) {
     console.error("Error occurred during login:", error);
@@ -264,6 +267,7 @@ AuthRouter.post("/logout", isAuth, async (req, res) => {
         status: 200,
         message: "Logout Successfully",
         data: user,
+        logout:true,
       });
     });
   } catch (error) {

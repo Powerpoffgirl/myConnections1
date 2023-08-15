@@ -60,31 +60,6 @@ server.use(AuthRouter);
 server.use("/auth", AuthRouter);
 server.use("/follow", isAuth, FollowRouter);
 
-// server.get("/login")
-
-// server.post("/", (req, res) => {
-//   console.log(req.body);
-
-//   if (!req.files || !req.files.photo) {
-//     return res.status(400).send("No file uploaded.");
-//   }
-
-//   const file = req.files.photo;
-
-//   cloudinary.uploader.upload(file.tempFilePath, (err, result) => {
-//     if (err) {
-//       console.error("Error uploading to Cloudinary:", err);
-//       return res.status(500).send("Error uploading image.");
-//     }
-//     console.log("Cloudinary upload result:", result);
-//     // You can do further processing or response handling here
-//     res.send("Image uploaded successfully!");
-//   });
-// });
-
-
-
-
 // Test get request
 server.get("/", (req, res) => {
     return res.send({
@@ -92,7 +67,6 @@ server.get("/", (req, res) => {
       message: "Welcome to your My Connections App",
     });
   });
-
 
 // Server is listening
 server.listen(PORT, (req, res) => {
