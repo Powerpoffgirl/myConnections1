@@ -223,7 +223,6 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
 
 
 
-
 AuthRouter.get("/getUserDetails", async (req, res) => {
   try {
     // Check if the authorization header exists and get the token
@@ -240,7 +239,7 @@ AuthRouter.get("/getUserDetails", async (req, res) => {
     const token = authorizationHeader.split(' ')[1];
 
     // Verify the token and extract user information
-    const decodedToken = jwt.verify(token, 'your-secret-key');
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.userId; // Assuming you include userId in the token payload
 
     // Fetch user details from the database using the findUserById method
@@ -294,33 +293,6 @@ AuthRouter.post("/logout", isAuth, async (req, res) => {
     });
   }
 });
-
-// app.post("/logout_from_all_devices", isAuth, async (req, res) => {
-//   const username = req.session.user.username;
-
-//   //create a session schema
-//   const Schema = mongoose.Schema;
-//   const sessionSchema = new Schema({ _id: String }, { strict: false });
-//   const sessionModel = mongoose.model("session", sessionSchema);
-
-//   try {
-//     const deletionCount = await sessionModel.deleteMany({
-//       "session.user.username": username,
-//     });
-//     console.log(deletionCount);
-//     return res.send({
-//       status: 200,
-//       message: "Logout from all devices successfully",
-//     });
-//   } catch (error) {
-//     return res.send({
-//       status: 500,
-//       message: "Logout Failed",
-//       error: error,
-//     });
-//   }
-// });
-
 
 
 module.exports = AuthRouter;
