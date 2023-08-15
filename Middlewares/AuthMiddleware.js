@@ -1,4 +1,5 @@
 const isAuth = (req, res, next) => {
+  console.log('req',req)
   console.log("REQUEST SESSION IN ISAUTH", req.session.isAuth);
   console.log("REQUEST SESSION USER", req.session.user);
 

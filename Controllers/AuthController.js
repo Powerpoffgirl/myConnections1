@@ -248,7 +248,8 @@ AuthRouter.get("/getUserDetails", isAuth, async (req, res) => {
 
 AuthRouter.post("/logout", isAuth, async (req, res) => {
   try {
-    console.log("REQUEST SESSION BEFORE LOGOUT", req.session);
+    console.log("REQUEST BODY FROM LOGOUT", req.body);
+    console.log("REQUEST SESSION FROM LOGOUT", req.session);
     const user = req.session.user;
 
     req.session.destroy((err) => {
@@ -261,7 +262,6 @@ AuthRouter.post("/logout", isAuth, async (req, res) => {
           error: "Something went wrong during logout.",
         });
       }
-
       // Successful logout
       return res.status(200).json({
         status: 200,
