@@ -5,12 +5,13 @@ const isAuth = (req, res, next) => {
   // console.log("REQUEST TOKEN", req.token);
   const token = req.header('Authorization');
   console.log("TOKEN", token)
-  
+
   if (!token) {
     return res.status(401).json({ message: 'Authorization token missing' });
   }
 
   try {
+    const token = req.header('Authorization').split(' ')[1]; // Extract token from header
     // Verify the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
