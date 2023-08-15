@@ -223,7 +223,7 @@ AuthRouter.put("/updateUser", isAuth, async (req, res) => {
 
 
 
-AuthRouter.get("/getUserDetails", async (req, res) => {
+AuthRouter.get("/getUserDetails", isAuth, async (req, res) => {
   try {
     // Check if the authorization header exists and get the token
     const authorizationHeader = req.header('Authorization');
