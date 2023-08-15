@@ -131,8 +131,9 @@ AuthRouter.post("/login", async (req, res) => {
     return res.status(200).json({
       status: 200,
       message: "Login Successfully",
+      token:token,
       data: userDb,
-      sessionId: req.sessionID,
+      // sessionId: req.sessionID,
     });
   } catch (error) {
     console.error("Error occurred during login:", error);
