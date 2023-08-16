@@ -54,6 +54,7 @@ FollowRouter.post("/follow-user", async (req, res) => {
 });
 
 FollowRouter.post("/following-list", async (req, res) => {
+  console.log("REQUEST SESSION USER-----", req.session.user.userId)
   const followerUserId = req.session.user.userId;
   console.log("Follower User Id: ", followerUserId)
   const skip = req.query.skip || 0;
@@ -93,6 +94,7 @@ FollowRouter.post("/following-list", async (req, res) => {
 });
 
 FollowRouter.post("/follower-list", async (req, res) => {
+  console.log("REQUEST SESSION USER-----", req.session.user.userId)
   const followingUserId = req.session.user.userId;
   const skip = req.query.skip || 0;
 
