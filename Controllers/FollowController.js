@@ -9,7 +9,7 @@ const {
 const { off } = require("../Schemas/FollowSchema");
 const FollowRouter = express.Router();
 
-FollowRouter.get("/follow-user", async (req, res) => {
+FollowRouter.post("/follow-user", async (req, res) => {
   const followerUserId = req.session.user.userId;
   const followingUserId = req.body.followingUserId;
 
