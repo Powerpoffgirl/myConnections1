@@ -118,12 +118,12 @@ AuthRouter.post("/login", async (req, res) => {
       );
 
     // Session-based authentication
-    // req.session.isAuth = true;
-    // req.session.user = {
-    //   username: userDb.username,
-    //   email: userDb.email,
-    //   userId: userDb._id,
-    // };
+    req.session.isAuth = true;
+    req.session.user = {
+      username: userDb.username,
+      email: userDb.email,
+      userId: userDb._id,
+    };
 
 
     // console.log("REQUEST SESSION AFTER LOGIN", req.session)
